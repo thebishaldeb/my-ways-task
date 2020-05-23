@@ -1,0 +1,32 @@
+{
+  "name": "my-ways-task",
+  "version": "1.0.0",
+  "description": "MyWays Internship task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js",
+    "server": "nodemon server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "node server/seeds"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thebishaldeb/my-ways-task.git"
+  },
+  "author": "Bishal Deb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thebishaldeb/my-ways-task/issues"
+  },
+  "homepage": "https://github.com/thebishaldeb/my-ways-task#readme",
+  "dependencies": {
+    "client": "file:client",
+    "server": "file:server"
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0",
+    "nodemon": "^2.0.4"
+  }
+}
