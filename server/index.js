@@ -25,7 +25,20 @@ app.use(cookieParser());
 
 app.use(express.static("client/build"));
 
+app.get("/getInternship", (req, res) => {
+    let id = req.query.id;
+    Internship.findById(id, (err, doc) => {
+        if (err) return res.status(400).send(err);
+        res.send(doc);
+    });
+});
 
+app.get("/internships", (req, res) => {
+    Internship.find({}, (err, users) => {
+        if (err) return res.status(400).send(err);
+        res.status(200).send(users);
+    });
+});
 
 if (process.env.NODE_ENV === "production") {
     const path = require("path");
