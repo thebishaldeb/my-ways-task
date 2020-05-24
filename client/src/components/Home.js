@@ -21,30 +21,37 @@ class Home extends React.Component {
     return loading ? (
       <Spin />
     ) : (
-      <Card title={<h1><strong>List of Internships</strong></h1>}  >
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 4,
-          lg: 4,
-          xl: 6,
-          xxl: 3,
-        }}
-        dataSource={internships}
-        renderItem={item => (
-          <List.Item>
-            <Card title={item.name} hoverable>
-              <Link to={`/${item._id}`}>
-                <Button type="primary" ghost>
-                  See Details
-                </Button>
-              </Link>
-            </Card>
-          </List.Item>
-        )}
-      /></Card>
+      <Card
+        title={
+          <h1>
+            <strong>List of Internships</strong>
+          </h1>
+        }
+      >
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 4,
+            lg: 4,
+            xl: 6,
+            xxl: 3,
+          }}
+          dataSource={internships}
+          renderItem={item => (
+            <List.Item>
+              <Card title={item.name} hoverable>
+                <Link to={`/${item._id}`}>
+                  <Button type="primary" ghost>
+                    See Details
+                  </Button>
+                </Link>
+              </Card>
+            </List.Item>
+          )}
+        />
+      </Card>
     );
   }
 }

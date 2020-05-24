@@ -15,10 +15,10 @@ export const getInternship = async id => {
   return request;
 };
 
-export const getMessages = async (id, userId) => {
+export const getValidation = async (id, userId, func) => {
   const request = await axios
     .get(`/message?id=${id}&userId=${userId}`)
     .then(response => response.data)
-    .catch(e => console.log(e));
+    .catch(e => func());
   return request;
 };

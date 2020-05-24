@@ -3,7 +3,9 @@ var express = require('express'),
   cookieParser = require('cookie-parser'),
   mongoose = require('mongoose'),
   config = require('./config').get(process.env.NODE_ENV),
-  app = express();
+  app = express(),
+  http = require('http').Server(app),
+  io = require('socket.io')(http);
 
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
@@ -21,6 +23,7 @@ const { Message } = require('./models/message');
 const { Internship } = require('./models/internship');
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(express.static('client/build'));
@@ -43,11 +46,44 @@ app.get('/getInternship', (req, res) => {
 app.get('/message', (req, res) => {
   let id = req.query.id;
   let userId = req.query.userId;
-  Internship.findById(id, (err, doc) => {
-    if (err) return res.status(400).send(err);
-    User.findById(userId, (err, doc) => {
+  Internship.findOne(
+    {
+      _id: id,
+      users: { _id: userId },
+    },
+    'name users.username',
+    (err, intDoc) => {
       if (err) return res.status(400).send(err);
-      res.send({ message: 'Got in database' });
+      res.send(intDoc);
+    },
+  ).populate({ path: 'users', match: { _id: userId }, select: 'username' });
+});
+
+io.on('connection', function (socket) {
+  socket.on('room', function (room) {
+    var res = room.split('-');
+    let id = res[0];
+    let userId = res[1];
+    Message.find({
+      company: { _id: id },
+      user: { _id: userId },
+    })
+      .sort({ createdAt: 1 })
+      .exec((err, messages) => {
+        if (err) return console.error(err);
+        socket.emit(room, messages);
+      });
+    socket.on('message', msg => {
+      const message = new Message({
+        content: msg.content,
+        sender: msg.sender,
+        company: { _id: msg.id },
+        user: { _id: msg.userId },
+      });
+      message.save(err => {
+        if (err) return console.error(err);
+      });
+      io.emit(`${msg.id}-${msg.userId}-1`, msg);
     });
   });
 });
@@ -62,7 +98,7 @@ if (process.env.NODE_ENV === 'production') {
 const port = process.env.PORT || 3001;
 
 connectDb().then(async () => {
-  app.listen(port, () => {
-    console.log('SERVER IS RUNNING!!!');
+  http.listen(port, () => {
+    console.log('listening on *:' + port);
   });
 });
